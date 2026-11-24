@@ -29,10 +29,10 @@ export default function App() {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     toastTimerRef.current = setTimeout(() => {
       setToastMessage(null);
-    }, 2400);
+    }, 2200);
   }, []);
 
-  // Apply per-cocktail atmospheric CSS custom properties & browser theme-color
+  // Apply nuanced per-cocktail CSS custom properties & browser theme-color
   useEffect(() => {
     const root = document.documentElement;
     Object.entries(cocktail.theme).forEach(([key, value]) => {
@@ -43,7 +43,7 @@ export default function App() {
 
     const themeMeta = document.querySelector('meta[name="theme-color"]');
     if (themeMeta) {
-      themeMeta.setAttribute('content', cocktail.theme['--bg-top']);
+      themeMeta.setAttribute('content', cocktail.theme['--studio-wall-dark']);
     }
   }, [cocktail]);
 
@@ -83,7 +83,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [drawerOpen, handleNextDrink, handlePrevDrink]);
 
-  // Horizontal swipe gesture across the cocktail UI body
+  // Horizontal swipe gesture across the cocktail UI body (no vertical scrolling)
   const handleSwipeStart = (clientX, clientY) => {
     swipeStartRef.current = { x: clientX, y: clientY };
   };
@@ -94,8 +94,7 @@ export default function App() {
     const dy = clientY - swipeStartRef.current.y;
     swipeStartRef.current = null;
 
-    // Require clear horizontal intent (> 48px and more horizontal than vertical)
-    if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy) * 1.35) {
+    if (Math.abs(dx) > 42 && Math.abs(dx) > Math.abs(dy) * 1.25) {
       if (dx < 0) {
         handleNextDrink();
       } else {
@@ -200,8 +199,6 @@ export default function App() {
         <CocktailStage3D
           cocktail={cocktail}
           customModelUrl={customModels[cocktail.id]}
-          onPrevDrink={handlePrevDrink}
-          onNextDrink={handleNextDrink}
         />
 
         <div
@@ -228,85 +225,93 @@ export default function App() {
             }
           }}
         >
-          {/* Identity & Filter Tags */}
-          <div className="identity-block">
-            <div className="tag-row" role="list" aria-label="Flavor and method tags">
-              {cocktail.tags.map((tag) => (
-                <button
-                  key={tag}
-                  id={`tag-${cocktail.id}-${tag.toLowerCase()}`}
-                  type="button"
-                  className={`filter-tag ${activeTag === tag ? 'active' : ''}`}
-                  onClick={() =>
-                    setActiveTag((prev) => (prev === tag ? null : tag))
-                  }
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
-
-            <h1 className="cocktail-title">{cocktail.name}</h1>
-            <p className="ingredients-subtext">{cocktail.shortIngredients}</p>
-          </div>
-
-          {/* Primary Action Cluster: (+) [Start making it] (✦) */}
-          <div className="action-cluster">
-            <button
-              id="save-to-bar-btn"
-              type="button"
-              className={`action-round-btn ${isSaved ? 'saved' : ''}`}
-              onClick={handleToggleSave}
-              aria-pressed={isSaved}
-              aria-label={isSaved ? 'Saved to My Bar' : 'Save cocktail to My Bar'}
-            >
-              {isSaved ? (
-                <Check size={19} strokeWidth={2.5} />
-              ) : (
-                <Plus size={20} strokeWidth={2.2} />
-              )}
-            </button>
-
-            <button
-              id="start-making-btn"
-              type="button"
-              className="primary-cta-pill"
-              onClick={() => setDrawerOpen(true)}
-            >
-              Start making it
-            </button>
-
-            <button
-              id="bartender-riff-btn"
-              type="button"
-              className={`action-round-btn ${showRiff ? 'active-riff' : ''}`}
-              onClick={() => setShowRiff((prev) => !prev)}
-              aria-expanded={showRiff}
-              aria-label="Show bartender variation and secret tip"
-            >
-              <Sparkles size={18} strokeWidth={2.1} />
-            </button>
-          </div>
-
-          {/* Optional Bartender's Riff / Twist Callout */}
-          {showRiff && (
-            <div className="riff-callout" role="region" aria-label="Bartender's Twist">
-              <div className="riff-callout-label">
-                <Sparkles size={12} />
-                <span>Bartender’s Twist</span>
+          {/* Top Identity & Actions Stack */}
+          <div className="upper-ui-stack">
+            <div className="identity-block">
+              <div className="tag-row" role="list" aria-label="Flavor and method tags">
+                {cocktail.tags.map((tag) => (
+                  <button
+                    key={tag}
+                    id={`tag-${cocktail.id}-${tag.toLowerCase()}`}
+                    type="button"
+                    className={`filter-tag ${activeTag === tag ? 'active' : ''}`}
+                    onClick={() =>
+                      setActiveTag((prev) => (prev === tag ? null : tag))
+                    }
+                  >
+                    {tag}
+                  </button>
+                ))}
               </div>
-              <p>{cocktail.riff}</p>
+
+              <h1 className="cocktail-title">{cocktail.name}</h1>
+              <p className="ingredients-subtext">{cocktail.shortIngredients}</p>
             </div>
-          )}
 
-          {/* Tactile Serving Scroll Wheel */}
-          <ServingWheel
-            servings={servings}
-            onChangeServings={handleChangeServings}
-            servingVolumeMl={cocktail.specs.servingVolumeMl}
-          />
+            {/* Primary Action Cluster: (+) [Start making it] (✦) */}
+            <div className="action-cluster-wrap">
+              <div className="action-cluster">
+                <button
+                  id="save-to-bar-btn"
+                  type="button"
+                  className={`action-round-btn ${isSaved ? 'saved' : ''}`}
+                  onClick={handleToggleSave}
+                  aria-pressed={isSaved}
+                  aria-label={isSaved ? 'Saved to My Bar' : 'Save cocktail to My Bar'}
+                >
+                  {isSaved ? (
+                    <Check size={18} strokeWidth={2.4} />
+                  ) : (
+                    <Plus size={19} strokeWidth={2.1} />
+                  )}
+                </button>
 
-          {/* Editorial ABOUT + Specs + Vibe Cards */}
+                <button
+                  id="start-making-btn"
+                  type="button"
+                  className="primary-cta-pill"
+                  onClick={() => setDrawerOpen(true)}
+                >
+                  Start making it
+                </button>
+
+                <button
+                  id="bartender-riff-btn"
+                  type="button"
+                  className={`action-round-btn ${showRiff ? 'active-riff' : ''}`}
+                  onClick={() => setShowRiff((prev) => !prev)}
+                  aria-expanded={showRiff}
+                  aria-label="Show bartender variation and secret tip"
+                >
+                  <Sparkles size={17} strokeWidth={2.0} />
+                </button>
+              </div>
+
+              {showRiff && (
+                <div
+                  className="riff-floating-popover"
+                  role="region"
+                  aria-label="Bartender's Twist"
+                  onClick={() => setShowRiff(false)}
+                >
+                  <div className="riff-callout-label">
+                    <Sparkles size={11} />
+                    <span>Bartender’s Twist</span>
+                  </div>
+                  <p>{cocktail.riff}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Curved Thumb-Natural Serving Ruler */}
+            <ServingWheel
+              servings={servings}
+              onChangeServings={handleChangeServings}
+              servingVolumeMl={cocktail.specs.servingVolumeMl}
+            />
+          </div>
+
+          {/* Expandable Fading ABOUT + Compact Specs + Ultra-Slim Vibes */}
           <SpecsAndVibes cocktail={cocktail} />
         </div>
 

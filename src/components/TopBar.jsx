@@ -3,7 +3,7 @@ import {
   ChevronLeft,
   MoreHorizontal,
   RotateCcw,
-  Share2,
+  Share,
   Upload,
 } from 'lucide-react';
 
@@ -40,12 +40,12 @@ export default function TopBar({
             onClick={onPrevDrink}
             aria-label="Previous drink"
           >
-            <ChevronLeft size={19} strokeWidth={2.2} />
+            <ChevronLeft size={19} strokeWidth={2.1} />
           </button>
         </div>
 
-        {/* Minimalist active cocktail indicator pills */}
-        <nav className="drink-pagination-pills" aria-label="Cocktail selector">
+        {/* Ultra-minimal borderless active cocktail dots */}
+        <nav className="drink-pagination-dots" aria-label="Cocktail selector">
           {cocktails.map((drink, idx) => (
             <button
               key={drink.id}
@@ -67,7 +67,7 @@ export default function TopBar({
             onClick={onShare}
             aria-label="Share cocktail recipe"
           >
-            <Share2 size={17} strokeWidth={2.1} />
+            <Share size={16} strokeWidth={2.05} />
           </button>
           <button
             id="more-options-btn"
@@ -77,7 +77,7 @@ export default function TopBar({
             aria-label="3D model and menu options"
             aria-expanded={menuOpen}
           >
-            <MoreHorizontal size={19} strokeWidth={2.2} />
+            <MoreHorizontal size={18} strokeWidth={2.1} />
           </button>
         </div>
       </header>
@@ -90,7 +90,7 @@ export default function TopBar({
             className="dropdown-item"
             onClick={() => fileInputRef.current?.click()}
           >
-            <Upload size={16} />
+            <Upload size={15} />
             <span>Preview custom Blender .glb</span>
           </button>
 
@@ -104,13 +104,13 @@ export default function TopBar({
                 setMenuOpen(false);
               }}
             >
-              <RotateCcw size={16} />
+              <RotateCcw size={15} />
               <span>Restore procedural 3D model</span>
             </button>
           )}
 
           <p className="dropdown-hint">
-            Swipe left or right anywhere below the glass to switch drinks, or drop{' '}
+            Swipe left or right across the menu to switch drinks, or drop{' '}
             <code>.glb</code> files into <code>public/models/</code>.
           </p>
         </div>
